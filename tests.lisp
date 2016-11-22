@@ -40,16 +40,16 @@
   t)
 
 (deftest copy-array.4
-   (let ((orig (make-array 21
-                           :adjustable t
-                           :fill-pointer 0)))
-     (dotimes (n 42)
-       (vector-push-extend n orig))
-     (let ((copy (copy-array orig
-                             :adjustable nil
-                             :fill-pointer nil)))
-       (typep copy 'simple-array)))
- t)
+    (let ((orig (make-array 21
+                            :adjustable t
+                            :fill-pointer 0)))
+      (dotimes (n 42)
+        (vector-push-extend n orig))
+      (let ((copy (copy-array orig
+                              :adjustable nil
+                              :fill-pointer nil)))
+        (typep copy 'simple-array)))
+  t)
 
 (deftest array-index.1
     (typep 0 'array-index)
@@ -170,8 +170,8 @@
 (deftest nth-value-or.1
     (multiple-value-bind (a b c)
         (nth-value-or 1
-                      (values 1 nil 1)
-                      (values 2 2 2))
+          (values 1 nil 1)
+          (values 2 2 2))
       (= a b c 2))
   t)
 
@@ -462,9 +462,9 @@
                         #'truncate
                         (lambda (x y)
                           (values y x))
-                       (lambda (x)
-                         (with-input-from-string (s x)
-                           (values (read s) (read s))))))))
+                        (lambda (x)
+                          (with-input-from-string (s x)
+                            (values (read s) (read s))))))))
       (multiple-value-list (funcall composite "2 11")))
   (5 1))
 
@@ -940,8 +940,8 @@
         (sb-ext:with-timeout 2
           (progn
             (loop
-              :repeat 10000
-              :do (gaussian-random 0 nil))
+               :repeat 10000
+               :do (gaussian-random 0 nil))
             'done))
       (sb-ext:timeout ()
         'timed-out))
@@ -1126,11 +1126,11 @@
           (rotate (vector 1 2 3 4) -4)
           (rotate (vector 1 2 3 4) -5))
   (#(1 2 3 4)
-   #(2 3 4 1)
-   #(3 4 1 2)
-   #(4 1 2 3)
-   #(1 2 3 4)
-   #(2 3 4 1)))
+    #(2 3 4 1)
+    #(3 4 1 2)
+    #(4 1 2 3)
+    #(1 2 3 4)
+    #(2 3 4 1)))
 
 (deftest rotate.5
     (values (rotate (list 1) 17)
@@ -1470,34 +1470,34 @@
                (cut (fn &rest args)
                  (with-gensyms (arg)
                    (print`(lambda (,arg)
-                       (apply ,fn (list ,@(substitute arg '_ args))))))))
+                            (apply ,fn (list ,@(substitute arg '_ args))))))))
       (let ((circular-list (make-circular-list 5 :initial-element :foo))
             (dotted-list (list* 'a 'b 'c 'd)))
         (loop for nth from 0
-              for fn in (list
-                         (cut #'lastcar _)
-                         (cut #'rotate _ 3)
-                         (cut #'rotate _ -3)
-                         (cut #'shuffle _)
-                         (cut #'random-elt _)
-                         (cut #'last-elt _)
-                         (cut #'ends-with :foo _))
-              nconcing
-                 (let ((on-circular-p (signals-error-p (funcall fn circular-list)))
-                       (on-dotted-p (signals-error-p (funcall fn dotted-list))))
-                   (when (or (not on-circular-p) (not on-dotted-p))
-                     (append
-                      (unless on-circular-p
-                        (let ((*print-circle* t))
-                          (list
-                           (format nil
-                                   "No appropriate error signalled when passing ~S to ~Ath entry."
-                                   circular-list nth))))
-                      (unless on-dotted-p
-                        (list
-                         (format nil
-                                 "No appropriate error signalled when passing ~S to ~Ath entry."
-                                 dotted-list nth)))))))))
+           for fn in (list
+                      (cut #'lastcar _)
+                      (cut #'rotate _ 3)
+                      (cut #'rotate _ -3)
+                      (cut #'shuffle _)
+                      (cut #'random-elt _)
+                      (cut #'last-elt _)
+                      (cut #'ends-with :foo _))
+           nconcing
+             (let ((on-circular-p (signals-error-p (funcall fn circular-list)))
+                   (on-dotted-p (signals-error-p (funcall fn dotted-list))))
+               (when (or (not on-circular-p) (not on-dotted-p))
+                 (append
+                  (unless on-circular-p
+                    (let ((*print-circle* t))
+                      (list
+                       (format nil
+                               "No appropriate error signalled when passing ~S to ~Ath entry."
+                               circular-list nth))))
+                  (unless on-dotted-p
+                    (list
+                     (format nil
+                             "No appropriate error signalled when passing ~S to ~Ath entry."
+                             dotted-list nth)))))))))
   nil)
 
 (deftest with-unique-names.1
@@ -1657,9 +1657,9 @@
 (deftest of-type.1
     (locally
         (declare (notinline of-type))
-    (let ((f (of-type 'string)))
-      (list (funcall f "foo")
-            (funcall f 'bar))))
+      (let ((f (of-type 'string)))
+        (list (funcall f "foo")
+              (funcall f 'bar))))
   (t nil))
 
 (deftest type=.1
@@ -1717,35 +1717,35 @@
 
 (deftest if-let.1
     (if-let (x (opaque :ok))
-            x
-            :bad)
+      x
+      :bad)
   :ok)
 
 (deftest if-let.2
     (if-let (x (opaque nil))
-            :bad
-            (and (not x) :ok))
+      :bad
+      (and (not x) :ok))
   :ok)
 
 (deftest if-let.3
     (let ((x 1))
       (if-let ((x 2)
                (y x))
-              (+ x y)
-              :oops))
+        (+ x y)
+        :oops))
   3)
 
 (deftest if-let.4
     (if-let ((x 1)
              (y nil))
-            :oops
-            (and (not y) x))
+      :oops
+      (and (not y) x))
   1)
 
 (deftest if-let.5
     (if-let (x)
-            :oops
-            (not x))
+      :oops
+      (not x))
   t)
 
 (deftest if-let.error.1
@@ -1871,18 +1871,18 @@
 (deftest extremum.1
     (let ((n 0))
       (dotimes (i 10)
-       (let ((data (shuffle (coerce (iota 10000 :start i) 'vector)))
-             (ok t))
-         (unless (eql i (extremum data #'<))
-           (setf ok nil))
-         (unless (eql i (extremum (coerce data 'list) #'<))
-           (setf ok nil))
-         (unless (eql (+ 9999 i) (extremum data #'>))
-           (setf ok nil))
-         (unless (eql (+ 9999 i) (extremum (coerce  data 'list) #'>))
-           (setf ok nil))
-         (when ok
-           (incf n))))
+        (let ((data (shuffle (coerce (iota 10000 :start i) 'vector)))
+              (ok t))
+          (unless (eql i (extremum data #'<))
+            (setf ok nil))
+          (unless (eql i (extremum (coerce data 'list) #'<))
+            (setf ok nil))
+          (unless (eql (+ 9999 i) (extremum data #'>))
+            (setf ok nil))
+          (unless (eql (+ 9999 i) (extremum (coerce  data 'list) #'>))
+            (setf ok nil))
+          (when ok
+            (incf n))))
       (when (eql 10 (extremum #(100 1 10 1000) #'> :start 1 :end 3))
         (incf n))
       (when (eql -1000 (extremum #(100 1 10 -1000) #'> :key 'abs))
@@ -1909,10 +1909,10 @@
       (values
        (let ((*print-case* :downcase))
          (and (eq upper (format-symbol t "~A" upper))
-               (eq lower (format-symbol t "~A" lower))))
+              (eq lower (format-symbol t "~A" lower))))
        (let ((*print-case* :upcase))
          (and (eq upper (format-symbol t "~A" upper))
-               (eq lower (format-symbol t "~A" lower))))
+              (eq lower (format-symbol t "~A" lower))))
        (let ((*print-case* :capitalize))
          (and (eq upper (format-symbol t "~A" upper))
               (eq lower (format-symbol t "~A" lower))))))

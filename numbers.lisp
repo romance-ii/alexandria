@@ -24,12 +24,12 @@ similarly if MAX is negative it should be close to zero."
     (labels
         ((gauss ()
            (loop
-                 for x1 = (- (random 2.0d0) 1.0d0)
-                 for x2 = (- (random 2.0d0) 1.0d0)
-                 for w = (+ (expt x1 2) (expt x2 2))
-                 when (< w 1.0d0)
-                 do (let ((v (sqrt (/ (* -2.0d0 (log w)) w))))
-                      (return (values (* x1 v) (* x2 v))))))
+              for x1 = (- (random 2.0d0) 1.0d0)
+              for x2 = (- (random 2.0d0) 1.0d0)
+              for w = (+ (expt x1 2) (expt x2 2))
+              when (< w 1.0d0)
+              do (let ((v (sqrt (/ (* -2.0d0 (log w)) w))))
+                   (return (values (* x1 v) (* x2 v))))))
          (guard (x)
            (unless (valid x)
              (tagbody
@@ -56,15 +56,15 @@ and STEP. START defaults to 0 and STEP to 1.
 
 Examples:
 
-  (iota 4)                      => (0 1 2 3)
-  (iota 3 :start 1 :step 1.0)   => (1.0 2.0 3.0)
-  (iota 3 :start -1 :step -1/2) => (-1 -3/2 -2)
+ (iota 4)                      => (0 1 2 3)
+ (iota 3 :start 1 :step 1.0)   => (1.0 2.0 3.0)
+ (iota 3 :start -1 :step -1/2) => (-1 -3/2 -2)
 "
   (declare (type (integer 0) n) (number start step))
   (loop repeat n
-        ;; KLUDGE: get numeric contagion right for the first element too
-        for i = (+ (- (+ start step) step)) then (+ i step)
-        collect i))
+     ;; KLUDGE: get numeric contagion right for the first element too
+     for i = (+ (- (+ start step) step)) then (+ i step)
+     collect i))
 
 (declaim (inline map-iota))
 (defun map-iota (function n &key (start 0) (step 1))
@@ -74,23 +74,23 @@ and STEP. START defaults to 0 and STEP to 1. Returns N.
 
 Examples:
 
-  (map-iota #'print 3 :start 1 :step 1.0) => 3
-    ;;; 1.0
-    ;;; 2.0
-    ;;; 3.0
+ (map-iota #'print 3 :start 1 :step 1.0) => 3
+ ;;; 1.0
+ ;;; 2.0
+ ;;; 3.0
 "
   (declare (type (integer 0) n) (number start step))
   (loop repeat n
-        ;; KLUDGE: get numeric contagion right for the first element too
-        for i = (+ start (- step step)) then (+ i step)
-        do (funcall function i))
+     ;; KLUDGE: get numeric contagion right for the first element too
+     for i = (+ start (- step step)) then (+ i step)
+     do (funcall function i))
   n)
 
 (declaim (inline lerp))
 (defun lerp (v a b)
   "Returns the result of linear interpolation between A and B, using the
 interpolation coefficient V."
-   (+ a (* v (- b a))))
+  (+ a (* v (- b a))))
 
 (declaim (inline mean))
 (defun mean (sample)
@@ -128,11 +128,11 @@ estimator for standard deviation). SAMPLE must be a sequence of numbers."
   (sqrt (variance sample :biased biased)))
 
 (define-modify-macro maxf (&rest numbers) max
-  "Modify-macro for MAX. Sets place designated by the first argument to the
+                     "Modify-macro for MAX. Sets place designated by the first argument to the
 maximum of its original value and NUMBERS.")
 
 (define-modify-macro minf (&rest numbers) min
-  "Modify-macro for MIN. Sets place designated by the first argument to the
+                     "Modify-macro for MIN. Sets place designated by the first argument to the
 minimum of its original value and NUMBERS.")
 
 ;;;; Factorial

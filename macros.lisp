@@ -34,16 +34,16 @@ variables, ensuring that each initform is evaluated only once.
 Each of SPECS must either be a symbol naming the variable to be rebound, or of
 the form:
 
-  (symbol initform)
+ (symbol initform)
 
 Bare symbols in SPECS are equivalent to
 
-  (symbol symbol)
+ (symbol symbol)
 
 Example:
 
-  (defmacro cons1 (x) (once-only (x) `(cons ,x ,x)))
-  (let ((y 0)) (cons1 (incf y))) => (1 . 1)
+ (defmacro cons1 (x) (once-only (x) `(cons ,x ,x)))
+ (let ((y 0)) (cons1 (incf y))) => (1 . 1)
 "
   (let ((gensyms (make-gensym-list (length specs) "ONCE-ONLY"))
         (names-and-forms (mapcar (lambda (spec)
@@ -88,29 +88,29 @@ arguments when given."
     (values body (nreverse decls) doc)))
 
 (defun parse-ordinary-lambda-list (lambda-list &key (normalize t)
-                                   allow-specializers
-                                   (normalize-optional normalize)
-                                   (normalize-keyword normalize)
-                                   (normalize-auxilary normalize))
+                                                    allow-specializers
+                                                    (normalize-optional normalize)
+                                                    (normalize-keyword normalize)
+                                                    (normalize-auxilary normalize))
   "Parses an ordinary lambda-list, returning as multiple values:
 
 1. Required parameters.
 
 2. Optional parameter specifications, normalized into form:
 
-   (name init suppliedp)
+ (name init suppliedp)
 
 3. Name of the rest parameter, or NIL.
 
 4. Keyword parameter specifications, normalized into form:
 
-   ((keyword-name name) init suppliedp)
+ ((keyword-name name) init suppliedp)
 
 5. Boolean indicating &ALLOW-OTHER-KEYS presence.
 
 6. &AUX parameter specifications, normalized into form
 
-   (name init).
+ (name init).
 
 7. Existence of &KEY in the lambda-list.
 
@@ -202,7 +202,7 @@ Signals a PROGRAM-ERROR is the lambda-list is malformed."
                               (destructuring-bind (keyword var) var-or-kv
                                 (unless (symbolp keyword)
                                   (simple-program-error "Invalid keyword name ~S in ordinary ~
-                                                         lambda-list:~%  ~S"
+ lambda-list:~%  ~S"
                                                         keyword lambda-list))
                                 (check-variable var "keyword parameter")))
                              (t
@@ -255,7 +255,7 @@ KEYFORM must evaluate to a CONS.
 
 Clauses are of the form:
 
-  ((CASE-KEYS . DESTRUCTURING-LAMBDA-LIST) FORM*)
+ ((CASE-KEYS . DESTRUCTURING-LAMBDA-LIST) FORM*)
 
 The clause whose CASE-KEYS matches CAR of KEY, as if by CASE, CCASE, or ECASE,
 is selected, and FORMs are then executed with CDR of KEY is destructured and
@@ -264,36 +264,36 @@ bound by the DESTRUCTURING-LAMBDA-LIST.
 Example:
 
  (defun dcase (x)
-   (destructuring-case x
-     ((:foo a b)
-      (format nil \"foo: ~S, ~S\" a b))
-     ((:bar &key a b)
-      (format nil \"bar, ~S, ~S\" a b))
-     (((:alt1 :alt2) a)
-      (format nil \"alt: ~S\" a))
-     ((t &rest rest)
-      (format nil \"unknown: ~S\" rest))))
+ (destructuring-case x
+ ((:foo a b)
+ (format nil \"foo: ~S, ~S\" a b))
+ ((:bar &key a b)
+ (format nil \"bar, ~S, ~S\" a b))
+ (((:alt1 :alt2) a)
+ (format nil \"alt: ~S\" a))
+ ((t &rest rest)
+ (format nil \"unknown: ~S\" rest))))
 
-  (dcase (list :foo 1 2))        ; => \"foo: 1, 2\"
-  (dcase (list :bar :a 1 :b 2))  ; => \"bar: 1, 2\"
-  (dcase (list :alt1 1))         ; => \"alt: 1\"
-  (dcase (list :alt2 2))         ; => \"alt: 2\"
-  (dcase (list :quux 1 2 3))     ; => \"unknown: 1, 2, 3\"
+ (dcase (list :foo 1 2))        ; => \"foo: 1, 2\"
+ (dcase (list :bar :a 1 :b 2))  ; => \"bar: 1, 2\"
+ (dcase (list :alt1 1))         ; => \"alt: 1\"
+ (dcase (list :alt2 2))         ; => \"alt: 2\"
+ (dcase (list :quux 1 2 3))     ; => \"unknown: 1, 2, 3\"
 
  (defun decase (x)
-   (destructuring-case x
-     ((:foo a b)
-      (format nil \"foo: ~S, ~S\" a b))
-     ((:bar &key a b)
-      (format nil \"bar, ~S, ~S\" a b))
-     (((:alt1 :alt2) a)
-      (format nil \"alt: ~S\" a))))
+ (destructuring-case x
+ ((:foo a b)
+ (format nil \"foo: ~S, ~S\" a b))
+ ((:bar &key a b)
+ (format nil \"bar, ~S, ~S\" a b))
+ (((:alt1 :alt2) a)
+ (format nil \"alt: ~S\" a))))
 
-  (decase (list :foo 1 2))        ; => \"foo: 1, 2\"
-  (decase (list :bar :a 1 :b 2))  ; => \"bar: 1, 2\"
-  (decase (list :alt1 1))         ; => \"alt: 1\"
-  (decase (list :alt2 2))         ; => \"alt: 2\"
-  (decase (list :quux 1 2 3))     ; =| error
+ (decase (list :foo 1 2))        ; => \"foo: 1, 2\"
+ (decase (list :bar :a 1 :b 2))  ; => \"bar: 1, 2\"
+ (decase (list :alt1 1))         ; => \"alt: 1\"
+ (decase (list :alt2 2))         ; => \"alt: 2\"
+ (decase (list :quux 1 2 3))     ; =| error
 "
   (expand-destructuring-case keyform clauses 'case))
 
@@ -305,6 +305,3 @@ Example:
 
 (dolist (name '(destructuring-ccase destructuring-ecase))
   (setf (documentation name 'function) (documentation 'destructuring-case 'function)))
-
-
-

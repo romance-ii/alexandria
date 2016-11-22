@@ -9,7 +9,7 @@ in the package, which matches the secondary return value of INTERN.
 
 Example:
 
-  (ensure-symbol :cons :cl) => cl:cons, :external
+ (ensure-symbol :cons :cl) => cl:cons, :external
 "
   (intern (string name) package))
 
@@ -49,7 +49,7 @@ string as the argument."
 using the second (optional, defaulting to \"G\") argument."
   (let ((g (if (typep x '(integer 0)) x (string x))))
     (loop repeat length
-          collect (gensym g))))
+       collect (gensym g))))
 
 (defun symbolicate (&rest things)
   "Concatenate together the names of some strings and symbols,

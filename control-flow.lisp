@@ -15,35 +15,35 @@ like #'eq and 'eq."
     (when (and (consp default)
                (member (first default) '(error cerror)))
       (setf default `(,@default "No keys match in SWITCH. Testing against ~S with ~S."
-                      ,value ',test)))
+                         ,value ',test)))
     `(let ((,value (,key ,object)))
-      (cond ,@(mapcar (lambda (clause)
-                        (if (member (first clause) '(t otherwise))
-                            (progn
-                              (when default
-                                (error "Multiple default clauses or illegal use of a default clause in ~S."
-                                       whole))
-                              (setf default `(progn ,@(rest clause)))
-                              '(()))
-                            (destructuring-bind (key-form &body forms) clause
-                              `((,test ,value ,key-form)
-                                ,@forms))))
-                      clauses)
-            (t ,default)))))
+       (cond ,@(mapcar (lambda (clause)
+                         (if (member (first clause) '(t otherwise))
+                             (progn
+                               (when default
+                                 (error "Multiple default clauses or illegal use of a default clause in ~S."
+                                        whole))
+                               (setf default `(progn ,@(rest clause)))
+                               '(()))
+                             (destructuring-bind (key-form &body forms) clause
+                               `((,test ,value ,key-form)
+                                 ,@forms))))
+                       clauses)
+             (t ,default)))))
 
 (defmacro switch (&whole whole (object &key (test 'eql) (key 'identity))
-                         &body clauses)
+                  &body clauses)
   "Evaluates first matching clause, returning its values, or evaluates and
 returns the values of DEFAULT if no keys match."
   (generate-switch-body whole object clauses test key))
 
 (defmacro eswitch (&whole whole (object &key (test 'eql) (key 'identity))
-                          &body clauses)
+                   &body clauses)
   "Like SWITCH, but signals an error if no key matches."
   (generate-switch-body whole object clauses test key '(error)))
 
 (defmacro cswitch (&whole whole (object &key (test 'eql) (key 'identity))
-                          &body clauses)
+                   &body clauses)
   "Like SWITCH, but signals a continuable error if no key matches."
   (generate-switch-body whole object clauses test key '(cerror "Return NIL from CSWITCH.")))
 

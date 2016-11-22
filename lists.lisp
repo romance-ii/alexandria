@@ -63,11 +63,11 @@ property list PLIST in the same order."
                        ,setter
                        ,new-value)))
                  `(,',get-value-from-entry ,entry))))))))
- (define-alist-get assoc-value assoc cdr acons
-"ASSOC-VALUE is an alist accessor very much like ASSOC, but it can
+  (define-alist-get assoc-value assoc cdr acons
+                    "ASSOC-VALUE is an alist accessor very much like ASSOC, but it can
 be used with SETF.")
- (define-alist-get rassoc-value rassoc car racons
-"RASSOC-VALUE is an alist accessor very much like RASSOC, but it can
+  (define-alist-get rassoc-value rassoc car racons
+                    "RASSOC-VALUE is an alist accessor very much like RASSOC, but it can
 be used with SETF."))
 
 (defun malformed-plist (plist)
@@ -88,45 +88,45 @@ the iteration early. If RETURN is not used, returns VALUES."
                   (,key (if ,tail
                             (pop ,tail)
                             (,results)))
-                 (,val (if ,tail
-                           (pop ,tail)
-                           (malformed-plist ',plist))))
-            (declare (ignorable ,key ,val))
-            ,@declarations
-            (tagbody
-               ,loop
-               ,@forms
-               (setf ,key (if ,tail
-                              (pop ,tail)
-                              (,results))
-                     ,val (if ,tail
-                              (pop ,tail)
-                              (malformed-plist ',plist)))
-               (go ,loop))))))))
+                  (,val (if ,tail
+                            (pop ,tail)
+                            (malformed-plist ',plist))))
+             (declare (ignorable ,key ,val))
+             ,@declarations
+             (tagbody
+                ,loop
+                ,@forms
+                (setf ,key (if ,tail
+                               (pop ,tail)
+                               (,results))
+                      ,val (if ,tail
+                               (pop ,tail)
+                               (malformed-plist ',plist)))
+                (go ,loop))))))))
 
 (define-modify-macro appendf (&rest lists) append
-  "Modify-macro for APPEND. Appends LISTS to the place designated by the first
+                     "Modify-macro for APPEND. Appends LISTS to the place designated by the first
 argument.")
 
 (define-modify-macro nconcf (&rest lists) nconc
-  "Modify-macro for NCONC. Concatenates LISTS to place designated by the first
+                     "Modify-macro for NCONC. Concatenates LISTS to place designated by the first
 argument.")
 
 (define-modify-macro unionf (list &rest args) union
-  "Modify-macro for UNION. Saves the union of LIST and the contents of the
+                     "Modify-macro for UNION. Saves the union of LIST and the contents of the
 place designated by the first argument to the designated place.")
 
 (define-modify-macro nunionf (list &rest args) nunion
-  "Modify-macro for NUNION. Saves the union of LIST and the contents of the
+                     "Modify-macro for NUNION. Saves the union of LIST and the contents of the
 place designated by the first argument to the designated place. May modify
 either argument.")
 
 (define-modify-macro reversef () reverse
-  "Modify-macro for REVERSE. Copies and reverses the list stored in the given
+                     "Modify-macro for REVERSE. Copies and reverses the list stored in the given
 place and saves back the result into the place.")
 
 (define-modify-macro nreversef () nreverse
-  "Modify-macro for NREVERSE. Reverses the list stored in the given place by
+                     "Modify-macro for NREVERSE. Reverses the list stored in the given place by
 destructively modifying it and saves back the result into the place.")
 
 (defun circular-list (&rest elements)
@@ -190,7 +190,7 @@ designator of the expected type in a TYPE-ERROR."
          :expected-type '(and list (not circular-list))))
 
 (macrolet ((def (name lambda-list doc step declare ret1 ret2)
-             (assert (member 'list lambda-list))
+               (assert (member 'list lambda-list))
              `(defun ,name ,lambda-list
                 ,doc
                 (do ((last list fast)
@@ -217,7 +217,7 @@ designator of the expected type in a TYPE-ERROR."
     n)
 
   (def lastcar (list)
-      "Returns the last element of LIST. Signals a type-error if LIST is not a
+    "Returns the last element of LIST. Signals a type-error if LIST is not a
 proper list."
     nil
     nil
@@ -225,7 +225,7 @@ proper list."
     (car fast))
 
   (def (setf lastcar) (object list)
-      "Sets the last element of LIST. Signals a type-error if LIST is not a proper
+    "Sets the last element of LIST. Signals a type-error if LIST is not a proper
 list."
     nil
     nil
@@ -251,7 +251,7 @@ expected-type designator of a TYPE-ERROR."
 
 (defun ensure-cons (cons)
   "If CONS is a cons, it is returned. Otherwise returns a fresh cons with CONS
-  in the car, and NIL in the cdr."
+ in the car, and NIL in the cdr."
   (if (consp cons)
       cons
       (cons cons nil)))
@@ -271,27 +271,27 @@ not destructively modified. Keys are compared using EQ."
   ;; FIXME: possible optimization: (remove-from-plist '(:x 0 :a 1 :b 2) :a)
   ;; could return the tail without consing up a new list.
   (loop for (key . rest) on plist by #'cddr
-        do (assert rest () "Expected a proper plist, got ~S" plist)
-        unless (member key keys :test #'eq)
-        collect key and collect (first rest)))
+     do (assert rest () "Expected a proper plist, got ~S" plist)
+     unless (member key keys :test #'eq)
+     collect key and collect (first rest)))
 
 (defun delete-from-plist (plist &rest keys)
   "Just like REMOVE-FROM-PLIST, but this version may destructively modify the
 provided plist."
   (declare (optimize speed))
   (loop with head = plist
-        with tail = nil   ; a nil tail means an empty result so far
-        for (key . rest) on plist by #'cddr
-        do (assert rest () "Expected a proper plist, got ~S" plist)
-           (if (member key keys :test #'eq)
-               ;; skip over this pair
-               (let ((next (cdr rest)))
-                 (if tail
-                     (setf (cdr tail) next)
-                     (setf head next)))
-               ;; keep this pair
-               (setf tail rest))
-        finally (return head)))
+     with tail = nil   ; a nil tail means an empty result so far
+     for (key . rest) on plist by #'cddr
+     do (assert rest () "Expected a proper plist, got ~S" plist)
+       (if (member key keys :test #'eq)
+           ;; skip over this pair
+           (let ((next (cdr rest)))
+             (if tail
+                 (setf (cdr tail) next)
+                 (setf head next)))
+           ;; keep this pair
+           (setf tail rest))
+     finally (return head)))
 
 (define-modify-macro remove-from-plistf (&rest keys) remove-from-plist
                      "Modify macro for REMOVE-FROM-PLIST.")
@@ -307,7 +307,7 @@ provided plist."
   "Applies FUNCTION to respective element(s) of each LIST, appending all the
 all the result list to a single list. FUNCTION must return a list."
   (loop for results in (apply #'mapcar function lists)
-        append results))
+     append results))
 
 (defun setp (object &key (test #'eql) (key #'identity))
   "Returns true if OBJECT is a list that denotes a set, NIL otherwise. A list
@@ -340,8 +340,8 @@ In other words, returns the product of LIST and MORE-LISTS using FUNCTION.
 Example:
 
  (map-product 'list '(1 2) '(3 4) '(5 6))
-  => ((1 3 5) (1 3 6) (1 4 5) (1 4 6)
-      (2 3 5) (2 3 6) (2 4 5) (2 4 6))
+ => ((1 3 5) (1 3 6) (1 4 5) (1 4 6)
+ (2 3 5) (2 3 6) (2 4 5) (2 4 6))
 "
   (labels ((%map-product (f lists)
              (let ((more (cdr lists))

@@ -1,40 +1,48 @@
 ;;; -*- lisp -*-
 
-;;;; A docstring extractor for the sbcl manual.  Creates
-;;;; @include-ready documentation from the docstrings of exported
-;;;; symbols of specified packages.
+;;;; A docstring  extractor for the sbcl  manual. Creates @include-ready
+;;;; documentation   from  the   docstrings  of   exported  symbols   of
+;;;; specified packages.
 
-;;;; This software is part of the SBCL software system. SBCL is in the
-;;;; public domain and is provided with absolutely no warranty. See
-;;;; the COPYING file for more information.
+;;;; This software is  part of the SBCL software system.  SBCL is in the
+;;;; public domain and is provided  with absolutely no warranty. See the
+;;;; COPYING file for more information.
 ;;;;
-;;;; Written by Rudi Schlatte <rudi@constantly.at>, mangled
-;;;; by Nikodemus Siivola.
+;;;; Written   by  Rudi   Schlatte   <rudi@constantly.at>,  mangled   by
+;;;; Nikodemus Siivola.
 
 ;;;; TODO
+;;;;
 ;;;; * Verbatim text
+;;;;
 ;;;; * Quotations
+;;;;
 ;;;; * Method documentation untested
+;;;;
 ;;;; * Method sorting, somehow
-;;;; * Index for macros & constants?
+;;;;
+;;;; * Index for macros & constants?  
+;;;;
 ;;;; * This is getting complicated enough that tests would be good
+;;;;
 ;;;; * Nesting (currently only nested itemizations work)
-;;;; * doc -> internal form -> texinfo (so that non-texinfo format are also
-;;;;   easily generated)
+;;;; 
+;;;; * doc  → internal form  → texinfo  (so that non-texinfo  format are
+;;;; also easily generated)
 
-;;;; FIXME: The description below is no longer complete. This
-;;;; should possibly be turned into a contrib with proper documentation.
+;;;; FIXME: The  description below  is no  longer complete.  This should
+;;;; possibly be turned into a contrib with proper documentation.
 
 ;;;; Formatting heuristics (tweaked to format SAVE-LISP-AND-DIE sanely):
 ;;;;
-;;;; Formats SYMBOL as @code{symbol}, or @var{symbol} if symbol is in
+;;;; Formats SYMBOL  as @code{symbol}, or  @var{symbol} if symbol  is in
 ;;;; the argument list of the defun / defmacro.
 ;;;;
-;;;; Lines starting with * or - that are followed by intented lines
-;;;; are marked up with @itemize.
+;;;; Lines starting with * or -  that are followed by intented lines are
+;;;; marked up with @itemize.
 ;;;;
-;;;; Lines containing only a SYMBOL that are followed by indented
-;;;; lines are marked up as @table @code, with the SYMBOL as the item.
+;;;; Lines containing only a SYMBOL  that are followed by indented lines
+;;;; are marked up as @table @code, with the SYMBOL as the item.
 
 (eval-when (:compile-toplevel :load-toplevel :execute)
   (require 'sb-introspect))
@@ -83,7 +91,7 @@ you deserve to lose.")
 
 (defparameter *itemize-start-characters* '(#\* #\-)
   "Characters that might start an itemization in docstrings when
-  at the start of a line.")
+ at the start of a line.")
 
 (defparameter *symbol-characters* "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890*:-+&#'"
   "List of characters that make up symbols in a docstring.")
@@ -136,7 +144,7 @@ you deserve to lose.")
                            `(,arg ,(specializer-name specializer))))
                     (subseq lambda-list 0 n-required)
                     specializers)
-           (subseq lambda-list n-required))))
+            (subseq lambda-list n-required))))
 
 (defun string-lines (string)
   "Lines in STRING as a vector."
@@ -426,9 +434,9 @@ there is no corresponding docstring."
 with #\@. Optionally downcase the result."
   (let ((result (with-output-to-string (s)
                   (loop for char across string
-                        when (find char *texinfo-escaped-chars*)
-                        do (write-char #\@ s)
-                        do (write-char char s)))))
+                     when (find char *texinfo-escaped-chars*)
+                     do (write-char #\@ s)
+                     do (write-char char s)))))
     (if downcasep (nstring-downcase result) result)))
 
 (defun empty-p (line-number lines)
@@ -507,9 +515,9 @@ semicolon, and the previous line is empty"
 
 (defun collect-lisp-section (lines line-number)
   (let ((lisp (loop for index = line-number then (1+ index)
-                    for line = (and (< index (length lines)) (svref lines index))
-                    while (indentation line)
-                    collect line)))
+                 for line = (and (< index (length lines)) (svref lines index))
+                 while (indentation line)
+                 collect line)))
     (values (length lisp) `("@lisp" ,@lisp "@end lisp"))))
 
 ;;; itemized sections
@@ -610,32 +618,32 @@ followed another tabulation label or a tabulation body."
         (result nil)
         (lines-consumed 0))
     (loop for line-number from starting-line below (length lines)
-          for line = (svref lines line-number)
-          for indentation = (indentation line)
-          for offset = (maybe-table-offset line-number lines)
-          do (cond
-               ((not indentation)
-                ;; empty line -- inserts paragraph.
-                (push "" result)
-                (incf lines-consumed))
-               ((and offset (= indentation this-offset))
-                ;; start of new item, or continuation of previous item
-                (if (and result (search "@item" (car result) :test #'char=))
-                    (push (format nil "@itemx ~A" (texinfo-line line))
-                          result)
-                    (progn
-                      (push "" result)
-                      (push (format nil "@item ~A" (texinfo-line line))
-                            result)))
-                (incf lines-consumed))
-               ((> indentation this-offset)
-                ;; continued item from previous line
-                (push (texinfo-line line) result)
-                (incf lines-consumed))
-               (t
-                ;; end of itemization
-                (loop-finish))))
-     ;; a single-line table isn't.
+       for line = (svref lines line-number)
+       for indentation = (indentation line)
+       for offset = (maybe-table-offset line-number lines)
+       do (cond
+            ((not indentation)
+             ;; empty line -- inserts paragraph.
+             (push "" result)
+             (incf lines-consumed))
+            ((and offset (= indentation this-offset))
+             ;; start of new item, or continuation of previous item
+             (if (and result (search "@item" (car result) :test #'char=))
+                 (push (format nil "@itemx ~A" (texinfo-line line))
+                       result)
+                 (progn
+                   (push "" result)
+                   (push (format nil "@item ~A" (texinfo-line line))
+                         result)))
+             (incf lines-consumed))
+            ((> indentation this-offset)
+             ;; continued item from previous line
+             (push (texinfo-line line) result)
+             (incf lines-consumed))
+            (t
+             ;; end of itemization
+             (loop-finish))))
+    ;; a single-line table isn't.
     (if (> (count-if (lambda (line) (> (length line) 0)) result) 1)
         (values lines-consumed
                 `("" "@table @emph" ,@(reverse result) "@end table" ""))
@@ -645,29 +653,29 @@ followed another tabulation label or a tabulation body."
 
 (defmacro with-maybe-section (index &rest forms)
   `(multiple-value-bind (count collected) (progn ,@forms)
-    (when count
-      (dolist (line collected)
-        (write-line line *texinfo-output*))
-      (incf ,index (1- count)))))
+     (when count
+       (dolist (line collected)
+         (write-line line *texinfo-output*))
+       (incf ,index (1- count)))))
 
 (defun write-texinfo-string (string &optional lambda-list)
   "Try to guess as much formatting for a raw docstring as possible."
   (let ((*texinfo-variables* (flatten lambda-list))
         (lines (string-lines (escape-for-texinfo string nil))))
-      (loop for line-number from 0 below (length lines)
-            for line = (svref lines line-number)
-            do (cond
-                 ((with-maybe-section line-number
-                    (and (lisp-section-p line line-number lines)
-                         (collect-lisp-section lines line-number))))
-                 ((with-maybe-section line-number
-                    (and (maybe-itemize-offset line)
-                         (collect-maybe-itemized-section lines line-number))))
-                 ((with-maybe-section line-number
-                    (and (maybe-table-offset line-number lines)
-                         (collect-maybe-table-section lines line-number))))
-                 (t
-                  (write-line (texinfo-line line) *texinfo-output*))))))
+    (loop for line-number from 0 below (length lines)
+       for line = (svref lines line-number)
+       do (cond
+            ((with-maybe-section line-number
+               (and (lisp-section-p line line-number lines)
+                    (collect-lisp-section lines line-number))))
+            ((with-maybe-section line-number
+               (and (maybe-itemize-offset line)
+                    (collect-maybe-itemized-section lines line-number))))
+            ((with-maybe-section line-number
+               (and (maybe-table-offset line-number lines)
+                    (collect-maybe-table-section lines line-number))))
+            (t
+             (write-line (texinfo-line line) *texinfo-output*))))))
 
 ;;;; texinfo formatting tools
 
@@ -747,7 +755,7 @@ followed another tabulation label or a tabulation body."
           (dolist (slot slots)
             (format *texinfo-output*
                     "@item ~(@code{~A}~#[~:; --- ~]~
-                      ~:{~2*~@[~2:*~A~P: ~{@code{@w{~S}}~^, ~}~]~:^; ~}~)~%~%"
+ ~:{~2*~@[~2:*~A~P: ~{@code{@w{~S}}~^, ~}~]~:^; ~}~)~%~%"
                     (slot-definition-name slot)
                     (remove
                      nil
@@ -790,15 +798,15 @@ followed another tabulation label or a tabulation body."
 (defun collect-gf-documentation (gf)
   "Collects method documentation for the generic function GF"
   (loop for method in (generic-function-methods gf)
-        for doc = (maybe-documentation method t)
-        when doc
-        collect doc))
+     for doc = (maybe-documentation method t)
+     when doc
+     collect doc))
 
 (defun collect-name-documentation (name)
   (loop for type in *documentation-types*
-        for doc = (maybe-documentation name type)
-        when doc
-        collect doc))
+     for doc = (maybe-documentation name type)
+     when doc
+     collect doc))
 
 (defun collect-symbol-documentation (symbol)
   "Collects all docs for a SYMBOL and (SETF SYMBOL), returns a list of
@@ -822,17 +830,17 @@ package, as well as for the package itself."
 
 (defmacro with-texinfo-file (pathname &body forms)
   `(with-open-file (*texinfo-output* ,pathname
-                                    :direction :output
-                                    :if-does-not-exist :create
-                                    :if-exists :supersede)
-    ,@forms))
+                                     :direction :output
+                                     :if-does-not-exist :create
+                                     :if-exists :supersede)
+     ,@forms))
 
 (defun write-ifnottex ()
   ;; We use @&key, etc to escape & from TeX in lambda lists -- so we need to
   ;; define them for info as well.
   (flet ((macro (name)
-                 (let ((string (string-downcase name)))
-                   (format *texinfo-output* "@macro ~A~%~A~%@end macro~%" string string))))
+           (let ((string (string-downcase name)))
+             (format *texinfo-output* "@macro ~A~%~A~%@end macro~%" string string))))
     (macro '&allow-other-keys)
     (macro '&optional)
     (macro '&rest)
